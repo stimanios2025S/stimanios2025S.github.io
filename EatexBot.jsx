@@ -4,14 +4,18 @@ import { useState } from "react";
 
 export default function EatexBot() {
   const [messages, setMessages] = useState([
-    { sender: "bot", text: "👋 Hello! I’m Eatex Bot. How may I help you today?" },
+    {
+      id: "bot-initial",
+      sender: "bot",
+      text: "👋 Hello! I’m Eatex Bot. How may I help you today?",
+    },
   ]);
   const [input, setInput] = useState("");
 
-  const handleSend = async () => {
+  const handleSend = () => {
     if (!input.trim()) return;
 
-    const userMessage = { sender: "user", text: input };
+    const userMessage = { id: `user-${Date.now()}`, sender: "user", text: input };
     setMessages((prev) => [...prev, userMessage]);
 
     let reply = "";
@@ -34,7 +38,14 @@ export default function EatexBot() {
         "I’m here to assist politely. Could you please tell me what you’d like to order?";
     }
 
-    setMessages((prev) => [...prev, { sender: "bot", text: reply }]);
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: `bot-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        sender: "bot",
+        text: reply,
+      },
+    ]);
     setInput("");
   };
 
@@ -43,9 +54,9 @@ export default function EatexBot() {
       <h2 style={styles.title}>Eatex Bot</h2>
 
       <div style={styles.chatBox}>
-        {messages.map((msg, idx) => (
+        {messages.map((msg) => (
           <div
-            key={`${msg.sender}-${idx}`}
+            key={msg.id}
             style={{
               ...styles.message,
               ...(msg.sender === "user" ? styles.userMessage : styles.botMessage),

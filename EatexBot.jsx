@@ -29,7 +29,7 @@ export default function EatexBot() {
     setMessages((prev) => [...prev, userMessage]);
 
     let reply = "";
-    const lower = input.toLowerCase();
+    const lower = sanitizedInput.toLowerCase();
 
     if (lower.includes("order")) {
       reply = "Great! Please tell me the item name and quantity.";
@@ -83,6 +83,7 @@ export default function EatexBot() {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
+              e.preventDefault();
               handleSend();
             }
           }}

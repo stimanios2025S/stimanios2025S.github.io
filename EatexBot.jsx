@@ -3,6 +3,9 @@
 import { useState } from "react";
 
 export default function EatexBot() {
+  const createMessageId = (prefix) =>
+    `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
   const [messages, setMessages] = useState([
     {
       id: "bot-initial",
@@ -15,7 +18,7 @@ export default function EatexBot() {
   const handleSend = () => {
     if (!input.trim()) return;
 
-    const userMessage = { id: `user-${Date.now()}`, sender: "user", text: input };
+    const userMessage = { id: createMessageId("user"), sender: "user", text: input };
     setMessages((prev) => [...prev, userMessage]);
 
     let reply = "";
@@ -41,7 +44,7 @@ export default function EatexBot() {
     setMessages((prev) => [
       ...prev,
       {
-        id: `bot-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        id: createMessageId("bot"),
         sender: "bot",
         text: reply,
       },
@@ -73,13 +76,13 @@ export default function EatexBot() {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              void handleSend();
+              handleSend();
             }
           }}
           placeholder="Type your message..."
           style={styles.input}
         />
-        <button onClick={() => void handleSend()} style={styles.button}>
+        <button onClick={handleSend} style={styles.button}>
           Send
         </button>
       </div>

@@ -4,7 +4,8 @@ import { useState } from "react";
 
 export default function EatexBot() {
   const createMessageId = (prefix) =>
-    `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    `${prefix}-${globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`}`;
+  const sanitizeText = (text) => text.replaceAll("<", "‹").replaceAll(">", "›");
 
   const [messages, setMessages] = useState([
     {
@@ -18,7 +19,12 @@ export default function EatexBot() {
   const handleSend = () => {
     if (!input.trim()) return;
 
-    const userMessage = { id: createMessageId("user"), sender: "user", text: input };
+    const sanitizedInput = sanitizeText(input.trim());
+    const userMessage = {
+      id: createMessageId("user"),
+      sender: "user",
+      text: sanitizedInput,
+    };
     setMessages((prev) => [...prev, userMessage]);
 
     let reply = "";
@@ -35,7 +41,7 @@ export default function EatexBot() {
       lower.includes("burger") ||
       lower.includes("drink")
     ) {
-      reply = `✅ Your order for "${input}" has been received! We'll prepare it right away.`;
+      reply = `✅ Your order for "${sanitizedInput}" has been received! We'll prepare it right away.`;
     } else {
       reply =
         "I’m here to assist politely. Could you please tell me what you’d like to order?";
@@ -56,7 +62,7 @@ export default function EatexBot() {
     <div style={styles.wrapper}>
       <h2 style={styles.title}>Eatex Bot</h2>
 
-      <div style={styles.chatBox}>
+      <div role="log" aria-live="polite" style={styles.chatBox}>
         {messages.map((msg) => (
           <div
             key={msg.id}
@@ -82,7 +88,7 @@ export default function EatexBot() {
           placeholder="Type your message..."
           style={styles.input}
         />
-        <button onClick={handleSend} style={styles.button}>
+        <button onClick={handleSend} style={styles.button} aria-label="Send message">
           Send
         </button>
       </div>

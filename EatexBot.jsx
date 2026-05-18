@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export default function EatexBot() {
+  const idCounter = useRef(0);
   const createMessageId = (prefix) =>
-    `${prefix}-${globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`}`;
-  const sanitizeText = (text) => text.replaceAll("<", "‹").replaceAll(">", "›");
+    globalThis.crypto?.randomUUID?.() ??
+    `${prefix}-${Date.now()}-${idCounter.current++}`;
 
   const [messages, setMessages] = useState([
     {
@@ -19,7 +20,7 @@ export default function EatexBot() {
   const handleSend = () => {
     if (!input.trim()) return;
 
-    const sanitizedInput = sanitizeText(input.trim());
+    const sanitizedInput = input.trim();
     const userMessage = {
       id: createMessageId("user"),
       sender: "user",
@@ -86,6 +87,7 @@ export default function EatexBot() {
             }
           }}
           placeholder="Type your message..."
+          aria-label="Type your message"
           style={styles.input}
         />
         <button onClick={handleSend} style={styles.button} aria-label="Send message">
